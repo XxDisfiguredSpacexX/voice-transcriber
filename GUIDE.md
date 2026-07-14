@@ -1,34 +1,41 @@
-# How to Set Up Voice Transcriber on Your Mac
+# Voice Transcriber — Setup Guide
 
-This tool watches a folder on your Mac. When you drop an audio file in, it automatically transcribes it and saves a note into your Obsidian vault.
+This tool watches a folder on your Mac. When you drop an audio file into it, the tool automatically transcribes it and saves a note directly into your Obsidian vault.
+
+Supported audio formats: `.mp3` `.m4a` `.aac` `.wav`
 
 ---
 
-## What You Need Before Starting
+## Before You Start
 
-- A Mac running macOS
-- An Obsidian vault already set up
-- An internet connection for the one-time setup
+You will need:
+- A Mac
+- Obsidian already installed with a vault set up
+- A Wi-Fi connection (for the one-time setup)
+
+All of the steps below are done in the **Terminal** app.
+
+> **How to open Terminal:** Press **Cmd + Space**, type `Terminal`, press Enter.
 
 ---
 
 ## Step 1 — Install Homebrew
 
-Homebrew is a tool that lets you install software on a Mac easily.
+Homebrew is a tool that lets you install software on a Mac from the Terminal.
 
-Open the **Terminal** app (search for it in Spotlight with Cmd+Space) and paste this:
+Paste this into Terminal and press Enter:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Press Enter and follow the prompts. This may take a few minutes.
+It will ask for your Mac password. Type it and press Enter (you won't see the characters — that's normal). This takes a few minutes.
 
 ---
 
 ## Step 2 — Install ffmpeg
 
-ffmpeg is required to read audio files. In Terminal, run:
+ffmpeg is a tool that lets the transcriber read audio files.
 
 ```bash
 brew install ffmpeg
@@ -36,29 +43,27 @@ brew install ffmpeg
 
 ---
 
-## Step 3 — Install Python
-
-Check if you already have Python by running:
+## Step 3 — Check if Python is installed
 
 ```bash
 python3 --version
 ```
 
-If it shows a version number, skip to Step 4.
+If you see a version number (e.g. `Python 3.11.0`), move on to Step 4.
 
-If not, download and install Python from: **https://www.python.org/downloads/**
+If you see an error, download and install Python from **https://www.python.org/downloads/** then come back here.
 
 ---
 
 ## Step 4 — Install pipx
 
-pipx is what installs the voice transcriber tool. Run:
+pipx is what installs the voice transcriber tool cleanly on your Mac.
 
 ```bash
 pip3 install pipx && pipx ensurepath
 ```
 
-Then **close your Terminal and reopen it** before continuing.
+**After this finishes, close Terminal completely and reopen it before moving on.**
 
 ---
 
@@ -68,34 +73,56 @@ Then **close your Terminal and reopen it** before continuing.
 pipx install git+https://github.com/XxDisfiguredSpacexX/voice-transcriber
 ```
 
-This downloads and installs the tool. The first time you run a transcription it will also download the AI model (~145 MB), so make sure you're on Wi-Fi.
-
 ---
 
-## Step 6 — Create Your Watched Folder
+## Step 6 — Create a folder to drop audio files into
 
-This is the folder you'll drop audio files into. You can put it anywhere — your Desktop is easy:
+This is the folder you will drop recordings into whenever you want them transcribed. Run this to create it on your Desktop:
 
 ```bash
 mkdir ~/Desktop/Voice\ Transcripts
 ```
 
+You can also just create the folder manually in Finder if you prefer.
+
 ---
 
-## Step 7 — Start the Watcher
+## Step 7 — Find your Obsidian vault path
 
-Run this command, replacing the `--output` path with the path to your Obsidian vault's voice notes folder:
+This is the most important step to get right. You need to tell the tool where your Obsidian vault is so it knows where to save the transcript notes.
 
-```bash
-voice-transcriber watch --input ~/Desktop/Voice\ Transcripts --output "/path/to/your/obsidian/Voice Notes"
+**How to find your vault path:**
+
+1. Open **Finder**
+2. Navigate to your Obsidian vault folder (the folder that contains all your notes)
+3. Right-click the folder where you want transcripts saved (e.g. a folder called `Voice Notes`)
+4. Hold the **Option key** on your keyboard — the menu item changes to **"Copy ... as Pathname"**
+5. Click it — this copies the full path to your clipboard
+
+It will look something like this:
+```
+/Users/yourname/Documents/MyVault/Voice Notes
 ```
 
-For example:
+Keep this copied — you will need it in the next step.
+
+---
+
+## Step 8 — Start the watcher
+
+Paste this into Terminal, but **replace the output path with the one you copied in Step 7:**
+
 ```bash
 voice-transcriber watch --input ~/Desktop/Voice\ Transcripts --output "/Users/yourname/Documents/MyVault/Voice Notes"
 ```
 
-You'll see:
+For example, if your vault path is `/Users/sarah/Documents/Notes/Voice Notes`, the command would be:
+
+```bash
+voice-transcriber watch --input ~/Desktop/Voice\ Transcripts --output "/Users/sarah/Documents/Notes/Voice Notes"
+```
+
+You will see this in Terminal when it is ready:
 ```
 Watching /Users/yourname/Desktop/Voice Transcripts
 Press Ctrl+C to stop.
@@ -103,23 +130,23 @@ Press Ctrl+C to stop.
 
 ---
 
-## Step 8 — Transcribe Your First File
+## Step 9 — Test it
 
-Drop any `.mp3`, `.m4a`, `.aac`, or `.wav` file into your **Voice Transcripts** folder.
+Drop any audio file into the **Voice Transcripts** folder on your Desktop.
 
-Within a few seconds you'll see:
+Within a few seconds, Terminal will show:
 ```
 Transcribing: my-recording.mp3
 Saved: 2026-07-14 12-36 - my-recording.md
 ```
 
-Open your Obsidian vault and the note will be there.
+Open Obsidian and the note will be there, titled with the date and time it was created.
 
 ---
 
-## What the Note Looks Like
+## What the note looks like in Obsidian
 
-```markdown
+```
 ---
 created: 2026-07-14 12:36
 tags:
@@ -130,20 +157,22 @@ source: my-recording.mp3
 # 2026-07-14 12:36 - my-recording
 
 Your transcribed text here, broken into
-paragraphs based on natural pauses...
+paragraphs based on your natural pauses...
 ```
 
 ---
 
-## Stopping the Watcher
+## Stopping and restarting
 
-Press **Ctrl+C** in the Terminal window to stop it.
+- **To stop:** Press **Ctrl+C** in the Terminal window
+- **To start again:** Run the same command from Step 8
+
+The Terminal window needs to stay open while the watcher is running. You can minimise it and leave it in the background.
 
 ---
 
-## Tips
+## Things to know
 
-- The watcher must be running for transcription to happen. You can leave the Terminal window open in the background.
-- Larger audio files take longer — a 10 minute recording takes roughly 2-3 minutes to transcribe.
-- To use a more accurate (but slower) model, add `--model small` or `--model medium` to the watch command.
-- Supported formats: `.mp3`, `.m4a`, `.aac`, `.wav`
+- The first time you transcribe a file, the tool downloads an AI model (~145 MB). This only happens once.
+- A 10 minute recording takes roughly 2–3 minutes to transcribe.
+- Filler words (`um`, `uh`, `you know`, `I mean`) are automatically removed. Everything else is left exactly as spoken.
