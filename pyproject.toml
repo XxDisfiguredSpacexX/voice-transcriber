@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voice-transcriber"
+version = "0.1.0"
+description = "Watches a folder for audio files and transcribes them into Obsidian vault notes"
+requires-python = ">=3.9"
+dependencies = [
+    "openai-whisper",
+    "watchdog",
+    "click",
+]
+
+[project.scripts]
+voice-transcriber = "voice_transcriber.cli:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voice_transcriber"]
