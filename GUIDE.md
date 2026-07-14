@@ -162,10 +162,71 @@ paragraphs based on your natural pauses...
 
 ---
 
-## Stopping and restarting
+## Step 10 — Auto-start on login (optional but recommended)
 
+By default, you need to open Terminal and run the watcher command every time you restart your Mac. This step makes the watcher start automatically in the background whenever you log in — no Terminal needed.
+
+Run this command, replacing both paths with your own (the same ones you used in Step 8):
+
+```bash
+cat > ~/Library/LaunchAgents/com.voice-transcriber.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.voice-transcriber</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$(which voice-transcriber)</string>
+        <string>watch</string>
+        <string>--input</string>
+        <string>$(echo ~/Desktop/Voice\ Transcripts)</string>
+        <string>--output</string>
+        <string>/Users/yourname/Documents/MyVault/Voice Notes</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$(echo ~/Library/Logs/voice-transcriber.log)</string>
+    <key>StandardErrorPath</key>
+    <string>$(echo ~/Library/Logs/voice-transcriber.log)</string>
+</dict>
+</plist>
+EOF
+launchctl load ~/Library/LaunchAgents/com.voice-transcriber.plist
+```
+
+> **Remember:** Replace `/Users/yourname/Documents/MyVault/Voice Notes` with your actual Obsidian vault path from Step 7.
+
+The watcher is now running in the background and will restart automatically every time you log in.
+
+**To check if it's working:**
+```bash
+launchctl list | grep voice-transcriber
+```
+If you see a line of output, it's running.
+
+**To view the logs:**
+```bash
+cat ~/Library/Logs/voice-transcriber.log
+```
+
+**To stop it permanently:**
+```bash
+launchctl unload ~/Library/LaunchAgents/com.voice-transcriber.plist
+```
+
+---
+
+## Stopping and restarting manually
+
+If you are not using auto-start, you can run the watcher manually:
+
+- **To start:** Run the command from Step 8
 - **To stop:** Press **Ctrl+C** in the Terminal window
-- **To start again:** Run the same command from Step 8
 
 The Terminal window needs to stay open while the watcher is running. You can minimise it and leave it in the background.
 
